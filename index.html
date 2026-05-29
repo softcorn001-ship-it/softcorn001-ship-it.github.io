@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>학년별 학습 & 문제풀기</title>
+  <title>학년/과목별 학습 & 문제풀기</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -28,9 +28,28 @@
       justify-content: center;
       gap: 10px;
       flex-wrap: wrap;
-      padding: 20px 16px;
+      padding: 20px 16px 16px;
+      background: #fff;
+      box-shadow: 0 1px 0 rgba(0,0,0,.06);
+    }
+
+    .subject-bar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 14px 16px 18px;
       background: #fff;
       box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+
+    .subject-bar-label {
+      font-size: .78rem;
+      font-weight: 700;
+      color: #888;
+      margin-right: 4px;
+      letter-spacing: .5px;
     }
 
     .grade-group {
@@ -71,6 +90,24 @@
       box-shadow: 0 2px 8px rgba(231,76,60,.4);
     }
 
+    .subject-btn {
+      padding: 8px 18px;
+      border: 2px solid #1abc9c;
+      background: #fff;
+      color: #1abc9c;
+      border-radius: 24px;
+      cursor: pointer;
+      font-size: .9rem;
+      font-weight: 600;
+      transition: all .2s;
+    }
+    .subject-btn:hover { background: #e8faf6; }
+    .subject-btn.active {
+      background: #1abc9c;
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(26,188,156,.4);
+    }
+
     main {
       max-width: 860px;
       margin: 28px auto;
@@ -93,6 +130,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
+      flex-wrap: wrap;
     }
     .card-title .badge {
       display: inline-block;
@@ -104,6 +142,9 @@
       color: #fff;
     }
     .badge.high { background: #e74c3c; }
+    .badge.subject-tag {
+      background: #1abc9c;
+    }
 
     #content-area {
       white-space: pre-wrap;
@@ -190,8 +231,8 @@
 <body>
 
 <header>
-  <h1>학년별 학습 & 문제풀기</h1>
-  <p>학년을 선택하면 학습 내용과 문제가 표시됩니다</p>
+  <h1>학년/과목별 학습 & 문제풀기</h1>
+  <p>학년과 과목을 선택하면 학습 내용과 문제가 표시됩니다</p>
 </header>
 
 <div class="grade-bar">
@@ -209,10 +250,21 @@
   </div>
 </div>
 
+<div class="subject-bar">
+  <span class="subject-bar-label">과목</span>
+  <button class="subject-btn" onclick="selectSubject('eng')">영어</button>
+  <button class="subject-btn" onclick="selectSubject('math')">수학</button>
+  <button class="subject-btn" onclick="selectSubject('kor')">국어</button>
+  <button class="subject-btn" onclick="selectSubject('chem')">화학</button>
+  <button class="subject-btn" onclick="selectSubject('phys')">물리</button>
+  <button class="subject-btn" onclick="selectSubject('earth')">지구</button>
+  <button class="subject-btn" onclick="selectSubject('bio')">생물</button>
+</div>
+
 <main>
   <div id="no-grade-msg">
     <div class="icon">📚</div>
-    학년을 선택해 주세요
+    <span id="no-grade-text">학년과 과목을 선택해 주세요</span>
   </div>
 
   <div id="content-card" class="card" style="display:none">
@@ -238,55 +290,138 @@
 </main>
 
 <script>
-  // ── 문제 / 답 변수 (여기서 수정하세요) ──────────────────────
-  var qj1 = '1+1';  var aj1 = 2;
-  var qj2 = '2 * 1.5';  var aj2 = 3;
-  var qj3 = 'bod';  var aj3 = 4;
-  var qg1 = '2+3';  var ag1 = 5;
-  var qg2 = '와샌즈아시는구나';  var ag2 = 6;
-  var qg3 = 'a';  var ag3 = 7;
+  // ── 문제(q) / 답(a) / 학습파일 경로(file) ── 값을 채워 주세요 ──
+  var quizData = {
+    j1_eng:   { q: '', a: '', file: '' },
+    j1_math:  { q: '', a: '', file: '' },
+    j1_kor:   { q: '', a: '', file: '' },
+    j1_chem:  { q: '', a: '', file: '' },
+    j1_phys:  { q: '', a: '', file: '' },
+    j1_earth: { q: '', a: '', file: '' },
+    j1_bio:   { q: '', a: '', file: '' },
+
+    j2_eng:   { q: '', a: '', file: '' },
+    j2_math:  { q: '', a: '', file: '' },
+    j2_kor:   { q: '', a: '', file: '' },
+    j2_chem:  { q: '', a: '', file: '' },
+    j2_phys:  { q: '', a: '', file: '' },
+    j2_earth: { q: '', a: '', file: '' },
+    j2_bio:   { q: '', a: '', file: '' },
+
+    j3_eng:   { q: '', a: '', file: '' },
+    j3_math:  { q: '', a: '', file: '' },
+    j3_kor:   { q: '', a: '', file: '' },
+    j3_chem:  { q: '', a: '', file: '' },
+    j3_phys:  { q: '', a: '', file: '' },
+    j3_earth: { q: '', a: '', file: '' },
+    j3_bio:   { q: '', a: '', file: '' },
+
+    g1_eng:   { q: '', a: '', file: '' },
+    g1_math:  { q: '', a: '', file: '' },
+    g1_kor:   { q: '', a: '', file: '' },
+    g1_chem:  { q: '', a: '', file: '' },
+    g1_phys:  { q: '', a: '', file: '' },
+    g1_earth: { q: '', a: '', file: '' },
+    g1_bio:   { q: '', a: '', file: '' },
+
+    g2_eng:   { q: '', a: '', file: '' },
+    g2_math:  { q: '', a: '', file: '' },
+    g2_kor:   { q: '', a: '', file: '' },
+    g2_chem:  { q: '', a: '', file: '' },
+    g2_phys:  { q: '', a: '', file: '' },
+    g2_earth: { q: '', a: '', file: '' },
+    g2_bio:   { q: '', a: '', file: '' },
+
+    g3_eng:   { q: '', a: '', file: '' },
+    g3_math:  { q: '', a: '', file: '' },
+    g3_kor:   { q: '', a: '', file: '' },
+    g3_chem:  { q: '', a: '', file: '' },
+    g3_phys:  { q: '', a: '', file: '' },
+    g3_earth: { q: '', a: '', file: '' },
+    g3_bio:   { q: '', a: '', file: '' }
+  };
   // ────────────────────────────────────────────────────────────
 
-  var currentGrade = null;
-
   var gradeInfo = {
-    j1: { label: '중 1',  file: 'repo/j1.txt', q: function(){ return qj1; }, a: function(){ return aj1; }, type: 'mid' },
-    j2: { label: '중 2',  file: 'repo/j2.txt', q: function(){ return qj2; }, a: function(){ return aj2; }, type: 'mid' },
-    j3: { label: '중 3',  file: 'repo/j3.txt', q: function(){ return qj3; }, a: function(){ return aj3; }, type: 'mid' },
-    g1: { label: '고 1',  file: 'repo/g1.txt', q: function(){ return qg1; }, a: function(){ return ag1; }, type: 'high' },
-    g2: { label: '고 2',  file: 'repo/g2.txt', q: function(){ return qg2; }, a: function(){ return ag2; }, type: 'high' },
-    g3: { label: '고 3',  file: 'repo/g3.txt', q: function(){ return qg3; }, a: function(){ return ag3; }, type: 'high' }
+    j1: { label: '중 1', type: 'mid' },
+    j2: { label: '중 2', type: 'mid' },
+    j3: { label: '중 3', type: 'mid' },
+    g1: { label: '고 1', type: 'high' },
+    g2: { label: '고 2', type: 'high' },
+    g3: { label: '고 3', type: 'high' }
   };
+
+  var subjectInfo = {
+    eng:   '영어',
+    math:  '수학',
+    kor:   '국어',
+    chem:  '화학',
+    phys:  '물리',
+    earth: '지구',
+    bio:   '생물'
+  };
+
+  var currentGrade   = null;
+  var currentSubject = null;
 
   function selectGrade(grade) {
     currentGrade = grade;
-    var info = gradeInfo[grade];
-    var isHigh = info.type === 'high';
-
-    // 버튼 active 처리
     document.querySelectorAll('.grade-btn').forEach(function(btn) {
       btn.classList.remove('active');
     });
     event.currentTarget.classList.add('active');
+    updateHint();
+    updateDisplay();
+  }
 
-    // 배지 색상
+  function selectSubject(subject) {
+    currentSubject = subject;
+    document.querySelectorAll('.subject-btn').forEach(function(btn) {
+      btn.classList.remove('active');
+    });
+    event.currentTarget.classList.add('active');
+    updateHint();
+    updateDisplay();
+  }
+
+  function updateHint() {
+    var text = document.getElementById('no-grade-text');
+    if (!currentGrade && !currentSubject) {
+      text.textContent = '학년과 과목을 선택해 주세요';
+    } else if (!currentGrade) {
+      text.textContent = '학년을 선택해 주세요';
+    } else if (!currentSubject) {
+      text.textContent = '과목을 선택해 주세요';
+    }
+  }
+
+  function updateDisplay() {
+    if (!currentGrade || !currentSubject) return;
+
+    var gInfo  = gradeInfo[currentGrade];
+    var isHigh = gInfo.type === 'high';
+    var key    = currentGrade + '_' + currentSubject;
+    var data   = quizData[key] || { q: '', a: '', file: '' };
+    var fullLabel = gInfo.label + ' · ' + subjectInfo[currentSubject];
+
+    // 배지
     var contentBadge = document.getElementById('content-badge');
     var quizBadge    = document.getElementById('quiz-badge');
-    contentBadge.textContent = info.label;
-    quizBadge.textContent    = info.label;
+    contentBadge.textContent = fullLabel;
+    quizBadge.textContent    = fullLabel;
     contentBadge.className = 'badge' + (isHigh ? ' high' : '');
     quizBadge.className    = 'badge' + (isHigh ? ' high' : '');
 
-    // 제출 버튼 색상
+    // 제출 버튼
     var submitBtn = document.getElementById('submit-btn');
     submitBtn.className = isHigh ? 'high' : '';
     submitBtn.id = 'submit-btn';
 
-    // 문제 박스 색상
+    // 문제 박스
     var qBox = document.getElementById('question-box');
     qBox.className = 'question-box' + (isHigh ? ' high' : '');
 
-    // 입력창 포커스 색상
+    // 입력창
     var inp = document.getElementById('answer-input');
     inp.style.borderColor = '#ddd';
 
@@ -302,18 +437,22 @@
     inp.value = '';
 
     // 학습 내용 로드
-    loadContent(info.file);
+    if (data.file) {
+      loadContent(data.file, key);
+    } else {
+      document.getElementById('content-area').innerHTML =
+        '<span class="empty-msg">학습 내용이 아직 없습니다. quizData["' + key + '"].file 경로를 설정해 주세요.</span>';
+    }
 
     // 문제 표시
-    var q = info.q();
-    if (q === 0 || q === '' || q === null || q === undefined) {
-      qBox.innerHTML = '<span style="color:#aaa;font-style:italic">아직 등록된 문제가 없습니다. qj1~qg3 변수를 설정해 주세요.</span>';
+    if (!data.q) {
+      qBox.innerHTML = '<span style="color:#aaa;font-style:italic">아직 등록된 문제가 없습니다. quizData["' + key + '"].q 값을 설정해 주세요.</span>';
     } else {
-      qBox.textContent = q;
+      qBox.textContent = data.q;
     }
   }
 
-  function loadContent(filePath) {
+  function loadContent(filePath, key) {
     var area = document.getElementById('content-area');
     area.innerHTML = '<span class="loading">불러오는 중...</span>';
 
@@ -336,10 +475,11 @@
   }
 
   function checkAnswer() {
-    if (!currentGrade) return;
+    if (!currentGrade || !currentSubject) return;
 
-    var info = gradeInfo[currentGrade];
-    var correctAnswer = info.a();
+    var key = currentGrade + '_' + currentSubject;
+    var data = quizData[key] || { q: '', a: '', file: '' };
+    var correctAnswer = data.a;
     var userInput = document.getElementById('answer-input').value.trim();
     var res = document.getElementById('result-msg');
 
@@ -350,8 +490,8 @@
       return;
     }
 
-    if (correctAnswer === 0 || correctAnswer === null || correctAnswer === undefined) {
-      res.textContent = '⚠ 아직 답이 등록되지 않았습니다. aj1~ag3 변수를 설정해 주세요.';
+    if (correctAnswer === '' || correctAnswer === null || correctAnswer === undefined) {
+      res.textContent = '⚠ 아직 답이 등록되지 않았습니다. quizData["' + key + '"].a 값을 설정해 주세요.';
       res.className = 'wrong';
       res.style.display = 'block';
       return;
