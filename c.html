@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>학년별 학습 & 문제풀기</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f4f8;
+      color: #333;
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(135deg, #2c3e50, #3498db);
+      color: #fff;
+      padding: 24px 32px;
+      text-align: center;
+    }
+    header h1 { font-size: 1.8rem; letter-spacing: 1px; }
+    header p  { margin-top: 6px; opacity: .8; font-size: .95rem; }
+
+    .grade-bar {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 20px 16px;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+
+    .grade-group {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .grade-group-label {
+      font-size: .78rem;
+      font-weight: 700;
+      color: #888;
+      margin-right: 4px;
+      letter-spacing: .5px;
+    }
+
+    .grade-btn {
+      padding: 8px 18px;
+      border: 2px solid #3498db;
+      background: #fff;
+      color: #3498db;
+      border-radius: 24px;
+      cursor: pointer;
+      font-size: .9rem;
+      font-weight: 600;
+      transition: all .2s;
+    }
+    .grade-btn:hover { background: #ebf5fb; }
+    .grade-btn.active {
+      background: #3498db;
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(52,152,219,.4);
+    }
+    .grade-btn.high { border-color: #e74c3c; color: #e74c3c; }
+    .grade-btn.high:hover { background: #fdecea; }
+    .grade-btn.high.active {
+      background: #e74c3c;
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(231,76,60,.4);
+    }
+
+    main {
+      max-width: 860px;
+      margin: 28px auto;
+      padding: 0 16px 40px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.08);
+      padding: 28px;
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #2c3e50;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-title .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: .78rem;
+      font-weight: 700;
+      background: #3498db;
+      color: #fff;
+    }
+    .badge.high { background: #e74c3c; }
+
+    #content-area {
+      white-space: pre-wrap;
+      line-height: 1.8;
+      font-size: .95rem;
+      color: #444;
+      min-height: 80px;
+    }
+
+    .empty-msg {
+      color: #aaa;
+      font-style: italic;
+      font-size: .9rem;
+    }
+
+    #quiz-card { display: none; }
+
+    .question-box {
+      background: #f8f9fa;
+      border-left: 4px solid #3498db;
+      padding: 14px 18px;
+      border-radius: 4px;
+      margin-bottom: 18px;
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+    .question-box.high { border-left-color: #e74c3c; }
+
+    .answer-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    #answer-input {
+      flex: 1;
+      padding: 10px 16px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color .2s;
+      outline: none;
+    }
+    #answer-input:focus { border-color: #3498db; }
+
+    #submit-btn {
+      padding: 10px 24px;
+      background: #3498db;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s;
+      white-space: nowrap;
+    }
+    #submit-btn:hover { background: #217dbb; }
+    #submit-btn.high { background: #e74c3c; }
+    #submit-btn.high:hover { background: #c0392b; }
+
+    #result-msg {
+      margin-top: 14px;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: .95rem;
+      display: none;
+    }
+    #result-msg.correct { background: #d5f5e3; color: #1e8449; border: 1px solid #a9dfbf; }
+    #result-msg.wrong   { background: #fadbd8; color: #922b21; border: 1px solid #f5b7b1; }
+
+    #no-grade-msg {
+      text-align: center;
+      padding: 60px 20px;
+      color: #aaa;
+      font-size: 1.05rem;
+    }
+    #no-grade-msg .icon { font-size: 2.5rem; margin-bottom: 12px; }
+
+    .loading { color: #aaa; font-style: italic; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>학년별 학습 & 문제풀기</h1>
+  <p>학년을 선택하면 학습 내용과 문제가 표시됩니다</p>
+</header>
+
+<div class="grade-bar">
+  <div class="grade-group">
+    <span class="grade-group-label">중학교</span>
+    <button class="grade-btn" onclick="selectGrade('j1')">중 1</button>
+    <button class="grade-btn" onclick="selectGrade('j2')">중 2</button>
+    <button class="grade-btn" onclick="selectGrade('j3')">중 3</button>
+  </div>
+  <div class="grade-group">
+    <span class="grade-group-label">고등학교</span>
+    <button class="grade-btn high" onclick="selectGrade('g1')">고 1</button>
+    <button class="grade-btn high" onclick="selectGrade('g2')">고 2</button>
+    <button class="grade-btn high" onclick="selectGrade('g3')">고 3</button>
+  </div>
+</div>
+
+<main>
+  <div id="no-grade-msg">
+    <div class="icon">📚</div>
+    학년을 선택해 주세요
+  </div>
+
+  <div id="content-card" class="card" style="display:none">
+    <div class="card-title">
+      <span id="content-label">학습 내용</span>
+      <span id="content-badge" class="badge"></span>
+    </div>
+    <div id="content-area"></div>
+  </div>
+
+  <div id="quiz-card" class="card">
+    <div class="card-title">
+      <span>문제</span>
+      <span id="quiz-badge" class="badge"></span>
+    </div>
+    <div id="question-box" class="question-box"></div>
+    <div class="answer-row">
+      <input type="text" id="answer-input" placeholder="답을 입력하세요" onkeydown="if(event.key==='Enter') checkAnswer()">
+      <button id="submit-btn" onclick="checkAnswer()">제출</button>
+    </div>
+    <div id="result-msg"></div>
+  </div>
+</main>
+
+<script>
+  // ── 문제 / 답 변수 (여기서 수정하세요) ──────────────────────
+  var qj1 = '1+1';  var aj1 = 2;
+  var qj2 = '2 * 1.5';  var aj2 = 3;
+  var qj3 = 'bod';  var aj3 = 4;
+  var qg1 = '2+3';  var ag1 = 5;
+  var qg2 = '와샌즈아시는구나';  var ag2 = 6;
+  var qg3 = 'a';  var ag3 = 7;
+  // ────────────────────────────────────────────────────────────
+
+  var currentGrade = null;
+
+  var gradeInfo = {
+    j1: { label: '중 1',  file: 'repo/j1.txt', q: function(){ return qj1; }, a: function(){ return aj1; }, type: 'mid' },
+    j2: { label: '중 2',  file: 'repo/j2.txt', q: function(){ return qj2; }, a: function(){ return aj2; }, type: 'mid' },
+    j3: { label: '중 3',  file: 'repo/j3.txt', q: function(){ return qj3; }, a: function(){ return aj3; }, type: 'mid' },
+    g1: { label: '고 1',  file: 'repo/g1.txt', q: function(){ return qg1; }, a: function(){ return ag1; }, type: 'high' },
+    g2: { label: '고 2',  file: 'repo/g2.txt', q: function(){ return qg2; }, a: function(){ return ag2; }, type: 'high' },
+    g3: { label: '고 3',  file: 'repo/g3.txt', q: function(){ return qg3; }, a: function(){ return ag3; }, type: 'high' }
+  };
+
+  function selectGrade(grade) {
+    currentGrade = grade;
+    var info = gradeInfo[grade];
+    var isHigh = info.type === 'high';
+
+    // 버튼 active 처리
+    document.querySelectorAll('.grade-btn').forEach(function(btn) {
+      btn.classList.remove('active');
+    });
+    event.currentTarget.classList.add('active');
+
+    // 배지 색상
+    var contentBadge = document.getElementById('content-badge');
+    var quizBadge    = document.getElementById('quiz-badge');
+    contentBadge.textContent = info.label;
+    quizBadge.textContent    = info.label;
+    contentBadge.className = 'badge' + (isHigh ? ' high' : '');
+    quizBadge.className    = 'badge' + (isHigh ? ' high' : '');
+
+    // 제출 버튼 색상
+    var submitBtn = document.getElementById('submit-btn');
+    submitBtn.className = isHigh ? 'high' : '';
+    submitBtn.id = 'submit-btn';
+
+    // 문제 박스 색상
+    var qBox = document.getElementById('question-box');
+    qBox.className = 'question-box' + (isHigh ? ' high' : '');
+
+    // 입력창 포커스 색상
+    var inp = document.getElementById('answer-input');
+    inp.style.borderColor = '#ddd';
+
+    // 패널 표시
+    document.getElementById('no-grade-msg').style.display = 'none';
+    document.getElementById('content-card').style.display = 'block';
+    document.getElementById('quiz-card').style.display = 'block';
+
+    // 결과 초기화
+    var res = document.getElementById('result-msg');
+    res.style.display = 'none';
+    res.className = '';
+    inp.value = '';
+
+    // 학습 내용 로드
+    loadContent(info.file);
+
+    // 문제 표시
+    var q = info.q();
+    if (q === 0 || q === '' || q === null || q === undefined) {
+      qBox.innerHTML = '<span style="color:#aaa;font-style:italic">아직 등록된 문제가 없습니다. qj1~qg3 변수를 설정해 주세요.</span>';
+    } else {
+      qBox.textContent = q;
+    }
+  }
+
+  function loadContent(filePath) {
+    var area = document.getElementById('content-area');
+    area.innerHTML = '<span class="loading">불러오는 중...</span>';
+
+    fetch(filePath)
+      .then(function(res) {
+        if (!res.ok) throw new Error('파일을 찾을 수 없습니다: ' + filePath);
+        return res.text();
+      })
+      .then(function(text) {
+        var trimmed = text.trim();
+        if (!trimmed) {
+          area.innerHTML = '<span class="empty-msg">학습 내용이 아직 없습니다. ' + filePath + ' 파일을 작성해 주세요.</span>';
+        } else {
+          area.textContent = trimmed;
+        }
+      })
+      .catch(function(err) {
+        area.innerHTML = '<span class="empty-msg">⚠ ' + err.message + '</span>';
+      });
+  }
+
+  function checkAnswer() {
+    if (!currentGrade) return;
+
+    var info = gradeInfo[currentGrade];
+    var correctAnswer = info.a();
+    var userInput = document.getElementById('answer-input').value.trim();
+    var res = document.getElementById('result-msg');
+
+    if (userInput === '') {
+      res.textContent = '답을 입력해 주세요.';
+      res.className = 'wrong';
+      res.style.display = 'block';
+      return;
+    }
+
+    if (correctAnswer === 0 || correctAnswer === null || correctAnswer === undefined) {
+      res.textContent = '⚠ 아직 답이 등록되지 않았습니다. aj1~ag3 변수를 설정해 주세요.';
+      res.className = 'wrong';
+      res.style.display = 'block';
+      return;
+    }
+
+    var correct = String(userInput) === String(correctAnswer);
+    if (correct) {
+      res.textContent = '✓ 정답입니다!';
+      res.className = 'correct';
+    } else {
+      res.textContent = '✗ 틀렸습니다. 다시 시도해 보세요.';
+      res.className = 'wrong';
+    }
+    res.style.display = 'block';
+  }
+</script>
+</body>
+</html>
