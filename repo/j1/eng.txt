@@ -1,0 +1,21 @@
+현재진행형
+
+현재진행형은 "지금 하고 있는 동작" 을 나타낼 때 사용해.
+주어 + be동사(am, is, are) + 동사-ing
+
+예시)
+I am studying. (나는 공부하고 있다.)
+She is reading a book. (그녀는 책을 읽고 있다.)
+They are playing soccer. (그들은 축구를 하고 있다.)
+
+동사에 ing 붙이기
+play → playing
+read → reading
+
+e로 끝나면 e를 빼기
+make → making
+write → writing
+
+자음+모음+자음이면 마지막 자음 한 번 더 넣기
+run → running
+swim → swimming
