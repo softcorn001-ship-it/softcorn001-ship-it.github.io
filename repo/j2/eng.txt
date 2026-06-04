@@ -1,0 +1,36 @@
+비교급
+비교급은 "더 ~한", "~보다 더 ..." 를 나타낼 때 사용한다.
+
+기본 형태
+1. 짧은 형용사
+형용사 + er + than
+
+예시:
+Tom is taller than Mike.
+(톰은 마이크보다 키가 더 크다.)
+This book is cheaper than that one.
+(이 책은 저 책보다 더 싸다.)
+
+2. 긴 형용사
+more + 형용사 + than
+
+예시:
+English is more interesting than math.
+(영어는 수학보다 더 재미있다.)
+This movie is more exciting than that movie.
+(이 영화는 저 영화보다 더 흥미진진하다.)
+
+비교급 만드는 방법
+원급	비교급
+tall	taller
+small	smaller
+fast	faster
+nice	nicer
+big	bigger
+happy	happier
+
+규칙
+tall → taller
+nice → nicer (e 삭제)
+big → bigger (자음 추가)
+happy → happier (y → i)
