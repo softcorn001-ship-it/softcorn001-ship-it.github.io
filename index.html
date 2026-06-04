@@ -238,27 +238,27 @@
 <div class="grade-bar">
   <div class="grade-group">
     <span class="grade-group-label">중학교</span>
-    <button class="grade-btn" onclick="selectGrade('j1')">중 1</button>
-    <button class="grade-btn" onclick="selectGrade('j2')">중 2</button>
-    <button class="grade-btn" onclick="selectGrade('j3')">중 3</button>
+    <button class="grade-btn" onclick="selectGrade('j1', this)">중 1</button>
+    <button class="grade-btn" onclick="selectGrade('j2', this)">중 2</button>
+    <button class="grade-btn" onclick="selectGrade('j3', this)">중 3</button>
   </div>
   <div class="grade-group">
     <span class="grade-group-label">고등학교</span>
-    <button class="grade-btn high" onclick="selectGrade('g1')">고 1</button>
-    <button class="grade-btn high" onclick="selectGrade('g2')">고 2</button>
-    <button class="grade-btn high" onclick="selectGrade('g3')">고 3</button>
+    <button class="grade-btn high" onclick="selectGrade('g1', this)">고 1</button>
+    <button class="grade-btn high" onclick="selectGrade('g2', this)">고 2</button>
+    <button class="grade-btn high" onclick="selectGrade('g3', this)">고 3</button>
   </div>
 </div>
 
 <div class="subject-bar">
   <span class="subject-bar-label">과목</span>
-  <button class="subject-btn" onclick="selectSubject('eng')">영어</button>
-  <button class="subject-btn" onclick="selectSubject('math')">수학</button>
-  <button class="subject-btn" onclick="selectSubject('kor')">국어</button>
-  <button class="subject-btn" onclick="selectSubject('chem')">화학</button>
-  <button class="subject-btn" onclick="selectSubject('phys')">물리</button>
-  <button class="subject-btn" onclick="selectSubject('earth')">지구</button>
-  <button class="subject-btn" onclick="selectSubject('bio')">생물</button>
+  <button class="subject-btn" onclick="selectSubject('eng', this)">영어</button>
+  <button class="subject-btn" onclick="selectSubject('math', this)">수학</button>
+  <button class="subject-btn" onclick="selectSubject('kor', this)">국어</button>
+  <button class="subject-btn" onclick="selectSubject('chem', this)">화학</button>
+  <button class="subject-btn" onclick="selectSubject('phys', this)">물리</button>
+  <button class="subject-btn" onclick="selectSubject('earth', this)">지구</button>
+  <button class="subject-btn" onclick="selectSubject('bio', this)">생물</button>
 </div>
 
 <main>
@@ -364,22 +364,22 @@
   var currentGrade   = null;
   var currentSubject = null;
 
-  function selectGrade(grade) {
+  function selectGrade(grade, btn) {
     currentGrade = grade;
-    document.querySelectorAll('.grade-btn').forEach(function(btn) {
-      btn.classList.remove('active');
+    document.querySelectorAll('.grade-btn').forEach(function(b) {
+      b.classList.remove('active');
     });
-    event.currentTarget.classList.add('active');
+    btn.classList.add('active');
     updateHint();
     updateDisplay();
   }
 
-  function selectSubject(subject) {
+  function selectSubject(subject, btn) {
     currentSubject = subject;
-    document.querySelectorAll('.subject-btn').forEach(function(btn) {
-      btn.classList.remove('active');
+    document.querySelectorAll('.subject-btn').forEach(function(b) {
+      b.classList.remove('active');
     });
-    event.currentTarget.classList.add('active');
+    btn.classList.add('active');
     updateHint();
     updateDisplay();
   }
